@@ -15,17 +15,17 @@ services:
       - ./src:/var/www/html:delegated
     depends_on:
       - php
-      - mysql
+      - db
     networks:
       - laravel
 
-  mysql:
-    image: mysql:5.7.29
-    container_name: mysql
+  db:
+    image: percona:5.7
+    container_name: db
     restart: unless-stopped
     tty: true
     ports:
-      - "3306:3306"
+      - "33006:3306"
     environment:
       MYSQL_DATABASE: homestead
       MYSQL_USER: homestead
@@ -35,6 +35,8 @@ services:
       SERVICE_NAME: mysql
     networks:
       - laravel
+    volumes:
+      - ./mysql:/var/lib/mysql
 
   php:
     build:
@@ -64,7 +66,7 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
 
   npm:
-    image: node:13.7
+    image: alpine-node:14
     container_name: npm
     volumes:
       - ./src:/var/www/html
@@ -79,7 +81,7 @@ services:
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
-      - mysql
+      - db
     working_dir: /var/www/html
     user: laravel
     entrypoint: ['php', '/var/www/html/artisan']
