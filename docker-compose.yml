@@ -15,7 +15,7 @@ services:
       - ./src:/var/www/html:delegated
     depends_on:
       - php
-      - db
+      - postgres
     networks:
       - laravel
 
@@ -61,7 +61,7 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
 
   npm:
-    image: alpine-node:14
+    image: node:lts-alpine
     container_name: npm
     volumes:
       - ./src:/var/www/html
@@ -76,7 +76,7 @@ services:
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
-      - db
+      - postgres
     working_dir: /var/www/html
     user: laravel
     entrypoint: ['php', '/var/www/html/artisan']
