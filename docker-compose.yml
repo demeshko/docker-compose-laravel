@@ -19,24 +19,19 @@ services:
     networks:
       - laravel
 
-  db:
-    image: percona:5.7
-    container_name: db
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "33006:3306"
+  postgres:
+    image: postgres:13.1-alpine
+    container_name: ${PROJECT_NAME}-postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
     environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5832:5432"
     networks:
       - laravel
-    volumes:
-      - ./mysql:/var/lib/mysql
 
   php:
     build:
