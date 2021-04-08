@@ -13,7 +13,7 @@ After that completes, follow the steps from the [src/README.md](src/README.md) f
 Bringing up the Docker Compose network with `site` instead of just using `up`, ensures that only our site's containers are brought up at the start, instead of all of the command containers as well. The following are built for our web server, with their exposed ports detailed:
 
 - **nginx** - `:8080`
-- **mysql** - `:3306`
+- **postgres** - `:5832`
 - **php** - `:9000`
 
 Three additional containers are included that handle Composer, NPM, and Artisan commands *without* having to have these platforms installed on your local computer. Use the following command examples from your project root, modifying them to fit your particular use case.
