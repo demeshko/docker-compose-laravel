@@ -61,7 +61,7 @@ services:
     entrypoint: ['composer', '--ignore-platform-reqs']
 
   npm:
-    image: node:lts-alpine
+    image: node:lts-bullseye
     container_name: npm
     volumes:
       - ./src:/var/www/html
