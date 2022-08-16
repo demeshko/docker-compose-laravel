@@ -1,60 +1,55 @@
 version: '3'
 
 networks:
-  laravel:
+  vgs-gdpr:
 
 services:
   site:
     build:
       context: .
       dockerfile: nginx.dockerfile
-    container_name: nginx
+    container_name: ${PROJECT_NAME}-nginx
     ports:
-      - "8080:80"
+      - "8082:80"
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
       - php
-      - db
+      - postgres
     networks:
-      - laravel
+      - vgs-gdpr
 
-  db:
-    image: percona:5.7
-    container_name: db
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "33006:3306"
-    environment:
-      MYSQL_DATABASE: homestead
-      MYSQL_USER: homestead
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
-    networks:
-      - laravel
+  postgres:
+    image: postgres:13.1-alpine
+    container_name: ${PROJECT_NAME}-postgres
     volumes:
-      - ./mysql:/var/lib/mysql
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5872:5432"
+    networks:
+      - vgs-gdpr
 
   php:
     build:
       context: .
       dockerfile: php.dockerfile
-    container_name: php
+    container_name: ${PROJECT_NAME}-php
     volumes:
       - ./src:/var/www/html:delegated
     ports:
       - "9000:9000"
     networks:
-      - laravel
+      - vgs-gdpr
 
   composer:
     build:
       context: .
       dockerfile: composer.dockerfile
-    container_name: composer
+    container_name: ${PROJECT_NAME}-composer
     volumes:
       - ./src:/var/www/html
     working_dir: /var/www/html
@@ -62,12 +57,12 @@ services:
       - php
     user: laravel
     networks:
-      - laravel
+      - vgs-gdpr
     entrypoint: ['composer', '--ignore-platform-reqs']
 
   npm:
-    image: alpine-node:14
-    container_name: npm
+    image: node:14-bullseye
+    container_name: ${PROJECT_NAME}-npm
     volumes:
       - ./src:/var/www/html
     working_dir: /var/www/html
@@ -77,13 +72,13 @@ services:
     build:
       context: .
       dockerfile: php.dockerfile
-    container_name: artisan
+    container_name: ${PROJECT_NAME}-artisan
     volumes:
       - ./src:/var/www/html:delegated
     depends_on:
-      - db
+      - postgres
     working_dir: /var/www/html
     user: laravel
     entrypoint: ['php', '/var/www/html/artisan']
     networks:
-      - laravel
+      - vgs-gdpr
